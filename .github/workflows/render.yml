@@ -1,5 +1,5 @@
 # n8n starts this with POST /repos/rush-ib/tarini-reel/actions/workflows/render.yml/dispatches
-# body: {"ref":"main","inputs":{"job_id":"2026-10-21-1729500000","mode":"reel","slides":"[\"<html>…\",…]"}}
+# First n8n (or you) saves the slides as jobs/<job_id>/slides.json, then dispatches with just: {"ref":"main","inputs":{"job_id":"2026-10-21-1729500000","mode":"reel"}}
 # Output: out/<job_id>/s1.png… (+ reel.mp4) and out/<job_id>/result.json with public links.
 # Free on a public repo. Holds no keys.
 name: render
@@ -8,7 +8,6 @@ on:
     inputs:
       job_id: { description: "unique folder name, e.g. 2026-10-21-1729500000", required: true }
       mode:   { description: "reel or carousel", required: true, type: choice, options: [reel, carousel], default: reel }
-      slides: { description: "JSON array of HTML pages", required: true }
       music:  { description: "file in music/ (optional, reel only)", required: false, default: "" }
 permissions:
   contents: write
@@ -20,7 +19,6 @@ jobs:
     env:
       JOB_ID: ${{ inputs.job_id }}
       MODE: ${{ inputs.mode }}
-      SLIDES: ${{ inputs.slides }}
       MUSIC: ${{ inputs.music }}
     steps:
       - name: Check job_id
@@ -55,5 +53,5 @@ jobs:
         run: |
           git config user.name "render-bot"; git config user.email "render-bot@users.noreply.github.com"
           git add out/ && git commit -m "Render $JOB_ID ($MODE)"
-          git checkout -- .
+          git checkout -- .   # drop the temporary s*.png changes in the repo root
           git pull --rebase origin main && git push origin HEAD:main
