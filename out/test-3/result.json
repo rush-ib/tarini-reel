@@ -1,0 +1,12 @@
+{
+  "job_id": "test-3",
+  "mode": "reel",
+  "images": [
+    "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/test-3/s1.png",
+    "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/test-3/s2.png",
+    "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/test-3/s3.png",
+    "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/test-3/s4.png"
+  ],
+  "video": "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/test-3/reel.mp4",
+  "run_id": "39760463827"
+}
