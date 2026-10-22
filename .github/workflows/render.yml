@@ -26,13 +26,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - name: Cache Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-1.56.1-chromium
       - name: Install Playwright + Chromium
-        run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+        run: npm i --no-save playwright@1.56.1 && npx playwright install chromium   # skips the download on a cache hit
       - name: Install FFmpeg
         if: inputs.mode == 'reel'
-        run: which ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+        run: which ffmpeg || sudo apt-get install -y --no-install-recommends ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
       - name: Render HTML to PNG
-        run: node render.js
+        run: node render.js || (npx playwright install-deps chromium && node render.js)   # system libraries only if Chrome fails to start
       - name: Build MP4
         if: inputs.mode == 'reel'
         run: |
