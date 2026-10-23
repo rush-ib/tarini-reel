@@ -1,0 +1,12 @@
+{
+  "job_id": "2026-10-21-123546",
+  "mode": "reel",
+  "images": [
+    "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/2026-10-21-123546/s1.png",
+    "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/2026-10-21-123546/s2.png",
+    "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/2026-10-21-123546/s3.png",
+    "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/2026-10-21-123546/s4.png"
+  ],
+  "video": "https://raw.githubusercontent.com/rush-ib/tarini-reel/main/out/2026-10-21-123546/reel.mp4",
+  "run_id": "39915594445"
+}
