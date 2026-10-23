@@ -13,7 +13,7 @@ permissions:
 concurrency: { group: render, cancel-in-progress: false }   # same queue as render.yml, one push at a time
 jobs:
   render:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       JOB_ID: ${{ inputs.job_id }}
