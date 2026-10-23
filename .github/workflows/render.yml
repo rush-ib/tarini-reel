@@ -9,20 +9,24 @@ on:
       job_id: { description: "unique folder name, e.g. 2026-10-21-1729500000", required: true }
       mode:   { description: "reel or carousel", required: true, type: choice, options: [reel, carousel], default: reel }
       music:  { description: "file in music/ (optional, reel only)", required: false, default: "" }
+      music_start: { description: "start the song at this time, e.g. 45 or 1:05 (optional)", required: false, default: "0" }
 permissions:
   contents: write
 concurrency: { group: render, cancel-in-progress: false }   # one push at a time
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       JOB_ID: ${{ inputs.job_id }}
       MODE: ${{ inputs.mode }}
       MUSIC: ${{ inputs.music }}
+      MUSIC_START: ${{ inputs.music_start }}
     steps:
       - name: Check job_id
         run: '[[ "$JOB_ID" =~ ^[A-Za-z0-9_-]{1,80}$ ]] || { echo "job_id may only use letters, digits, - and _"; exit 1; }'
+      - name: Check music_start
+        run: '[[ "$MUSIC_START" =~ ^[0-9]{1,2}(:[0-9]{2})?(\.[0-9]+)?$ ]] || { echo "music_start must look like 45 or 1:05"; exit 1; }'
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
@@ -35,7 +39,9 @@ jobs:
         run: npm i --no-save playwright@1.56.1 && npx playwright install chromium   # skips the download on a cache hit
       - name: Install FFmpeg
         if: inputs.mode == 'reel'
-        run: which ffmpeg || sudo apt-get install -y --no-install-recommends ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        with:
+          token: ${{ github.token }}
       - name: Render HTML to PNG
         run: node render.js || (npx playwright install-deps chromium && node render.js)   # system libraries only if Chrome fails to start
       - name: Build MP4
