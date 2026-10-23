@@ -1,0 +1,22 @@
+{
+  "demo": true,
+  "hook": "Nayi gaadi lene ka plan hai? Pehle sahi din dekh lo",
+  "icon": "🚗",
+  "activity": "Gaadi",
+  "week_title": "Is hafte gaadi kab lein?",
+  "days": [
+    { "dow": "Mon", "date": "26 Oct", "good": true },
+    { "dow": "Tue", "date": "27 Oct", "good": false },
+    { "dow": "Wed", "date": "28 Oct", "good": false },
+    { "dow": "Thu", "date": "29 Oct", "good": true },
+    { "dow": "Fri", "date": "30 Oct", "good": true },
+    { "dow": "Sat", "date": "31 Oct", "good": false },
+    { "dow": "Sun", "date": "1 Nov", "good": false }
+  ],
+  "best": { "dow": "Thursday", "date": "29 October" },
+  "reason": "Shubh nakshatra aur shubh yoga, dono saath (demo text)",
+  "start": "10:15 AM",
+  "end": "12:40 PM",
+  "window_share": 0.42,
+  "send_line": "Jo gaadi dekh raha hai, use ye bhej do"
+}
