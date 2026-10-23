@@ -1,0 +1,44 @@
+# Goes in the repo at .github/workflows/render-motion.yml (next to render.yml, which stays as it is).
+# Needs in the repo: motion/render-motion.js, motion/reel-template.js, motion/logo.png, and jobs/<job_id>/reel.json
+# Run by hand: GitHub > Actions > render-motion > Run workflow, job_id = the folder name under jobs/
+# Output: out/<job_id>/reel.mp4 and out/<job_id>/result.json with the public link.
+name: render-motion
+on:
+  workflow_dispatch:
+    inputs:
+      job_id: { description: "folder under jobs/ that holds reel.json", required: true }
+      music:  { description: "file in music/ (optional)", required: false, default: "" }
+permissions:
+  contents: write
+concurrency: { group: render, cancel-in-progress: false }   # same queue as render.yml, one push at a time
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      JOB_ID: ${{ inputs.job_id }}
+      MUSIC: ${{ inputs.music }}
+    steps:
+      - name: Check job_id
+        run: '[[ "$JOB_ID" =~ ^[A-Za-z0-9_-]{1,80}$ ]] || { echo "job_id may only use letters, digits, - and _"; exit 1; }'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Install Playwright + Chromium
+        run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+      - name: Install FFmpeg
+        run: which ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+      - name: Render the animated Reel
+        run: |
+          if [ -n "$MUSIC" ]; then node motion/render-motion.js "jobs/$JOB_ID/reel.json" reel.mp4 "music/$MUSIC"
+          else node motion/render-motion.js "jobs/$JOB_ID/reel.json" reel.mp4; fi
+      - name: Save reel.mp4 and result.json
+        run: |
+          D="out/$JOB_ID"; mkdir -p "$D"; mv reel.mp4 "$D/"
+          echo "{\"job_id\":\"$JOB_ID\",\"mode\":\"motion\",\"video\":\"https://raw.githubusercontent.com/${{ github.repository }}/main/$D/reel.mp4\",\"run_id\":\"${{ github.run_id }}\"}" > "$D/result.json"
+          cat "$D/result.json"
+      - name: Commit and push
+        run: |
+          git config user.name "render-bot"; git config user.email "render-bot@users.noreply.github.com"
+          git add out/ && git commit -m "Render $JOB_ID (motion)"
+          git pull --rebase origin main && git push origin HEAD:main
